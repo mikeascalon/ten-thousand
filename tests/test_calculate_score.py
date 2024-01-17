@@ -45,7 +45,7 @@ def test_three_fives():
     expected = 500
     assert actual == expected
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_three_ones():
     actual = GameLogic.calculate_score((1, 1, 1, 2, 3, 4))
     expected = 1000
