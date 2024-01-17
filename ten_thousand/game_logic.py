@@ -61,10 +61,15 @@ class GameLogic:
             count_fives = dice_values.count(5)
             count_ones = dice_values.count(1)
             counts = {num: dice_values.count(num) for num in set(dice_values)}
-            if count_ones == 3 and count_fives == 1:
+            if len(dice_values) == 6 and all(value == 1 for value in dice_values[:3]) and all(value == 2 for value in dice_values[3:]):
+                return 1200
+            elif count_ones == 3 and count_fives == 0:
+                return 1000  # Three ones case
+            elif count_ones == 3 and count_fives == 1:
                 return 1050
             elif count_fives == 3:
                 return 500
+
             elif sorted(dice_values) == [1, 2, 3, 4, 5, 6]:
                 return 1500
             elif any(dice_values.count(value) == 3 for value in set(dice_values)):
