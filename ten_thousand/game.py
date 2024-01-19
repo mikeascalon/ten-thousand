@@ -1,66 +1,87 @@
 from ten_thousand.game_logic import GameLogic
 import random
+import sys
 
-class TenThousandGame:
-    def __init__(self):
-        self.game_logic = GameLogic()
-        self.total_points = 0
-        self.max_rounds = 10
+def roll_and_score(roll_dice, remaining_dice, unbanked_points):
+    print(f"Rolling {remaining_dice} dice...")
+    dice_result = roll_dice(remaining_dice)
+    print("*** ", " ".join(map(str, dice_result)), " ***")
 
-    def play_round(self, round_number):
-        print(f"Starting round {round_number}")
-        print(f"Rolling 6 dice...")
+    user_input = input("Enter dice to keep, or (q)uit:\n> ")
 
-        unbanked_points = 0
-        remaining_dice = 6
+    if user_input.lower() == 'q':
+        print(f"Thanks for playing. ") 
+        sys.exit()
 
 
-        while True:
-            print(f"Rolling {remaining_dice} dice...")
-            dice_result = self.game_logic.roll_dice(remaining_dice)
-            print("***", " ".join(map(str, dice_result)), "***")
+    else: 
+        user_dice = list(map(int, user_input.split()))
+        round_points = GameLogic.calculate_score(user_dice)
+        unbanked_points += round_points
+        remaining_dice -= len(user_dice)
 
-            user_input = input("Enter dice to keep, or (q)uit:\n> ")
+        print(f"You have {unbanked_points} unbanked points and {remaining_dice} dice remaining")
+        return [remaining_dice, unbanked_points]
 
-            if user_input.lower() == 'q':
-                print(f"Thanks for playing. You earned {self.total_points} points")
+def play_round(roll_dice, round_number, total_points):
+    print(f"Starting round {round_number}")
+
+    unbanked_points = 0
+    remaining_dice = 6
+
+    # Roll the dice for the first time
+    roll_and_score_result = roll_and_score(roll_dice, remaining_dice, unbanked_points)
+    remaining_dice = roll_and_score_result[0]
+    unbanked_points = roll_and_score_result[1]
+
+    if remaining_dice == 0:  # Check if the user decided to quit immediately
+        print(f"Thanks for playing. You earned {total_points} points")
+        
+        
+
+    while True:
+        action = input("(r)oll again, (b)ank your points or (q)uit:\n> ")
+
+        if action.lower() == 'b':
+            total_points += unbanked_points
+            print(f"You banked {unbanked_points} points in round {round_number}")
+            print(f"Total score is {total_points} points")
+            return [total_points, True]  # Indicate to start a new round
+        elif action.lower() == 'q':
+            print(f"Thanks for playing. You earned {total_points} points")
+            # return total_points, False  # Indicate that the game should not continue
+            break
+            sys.exit()
+
+        roll_and_score_result = roll_and_score(roll_dice, remaining_dice, unbanked_points)
+        remaining_dice = roll_and_score_result[0]
+        unbanked_points = roll_and_score_result[1]
+
+        if remaining_dice == 0:  # Check if the user decided to quit after subsequent rolls
+            print(f"Thanks for playing. You earned {total_points} points")
+            break
+
+def play(roller=None):
+    roll_dice = roller or GameLogic.roll_dice
+    total_points = 0
+    max_rounds = 20
+
+    print("Welcome to Ten Thousand")
+    response = input("(y)es to play or (n)o to decline\n> ")
+
+    if response.lower() == 'y':
+        for round_number in range(1, max_rounds + 1):
+            play_round_result = play_round(roll_dice, round_number, total_points)
+            # total_points = play_round_result[0]
+            continue_round = play_round_result[1]
+            if not continue_round:
                 break
-
-            user_dice = list(map(int, user_input.split()))
-            round_points = self.game_logic.calculate_score(user_dice)
-            unbanked_points += round_points
-            remaining_dice -= len(user_dice)
-
-            print(f"You have {unbanked_points} unbanked points and {remaining_dice} dice remaining")
-
-            action = input("(r)oll again, (b)ank your points or (q)uit:\n> ")
-
-            if action.lower() == 'b':
-                self.total_points += unbanked_points
-                print(f"You banked {unbanked_points} points in round {round_number}")
-                print(f"Total score is {self.total_points} points")
-                break
-            elif action.lower() == 'q':
-                print(f"Thanks for playing. You earned {self.total_points} points")
-                break
-
-    def play(self):
-        print("Welcome to Ten Thousand")
-        response = input("(y)es to play or (n)o to decline\n> ")
-
-        if response.lower() == 'y':
-            for round_number in range(1, self.max_rounds + 1):
-                self.play_round(round_number)
-                if round_number < self.max_rounds:
-                    continue_playing = input("Do you want to play another round? (y/n)\n> ")
-                    if continue_playing.lower() != 'y':
-                        break
-
-        elif response.lower() == 'n':
-            print("OK. Maybe another time.")
-        else:
-            print("Invalid input. Please enter 'y' or 'n.'")
+    elif response.lower() == 'n':
+        print("OK. Maybe another time")
+    elif response.lower() == 'q':
+        print("Thanks for playing. You earned 0 points")
+    else:
+        print("Invalid input. Please enter 'y' or 'n.'")
 
 if __name__ == "__main__":
-    game = TenThousandGame()
-    game.play()
+    play()  
