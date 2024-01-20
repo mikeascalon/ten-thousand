@@ -2,7 +2,7 @@ from ten_thousand.game_logic import GameLogic
 import random
 import sys
 
-def roll_and_score(roll_dice, remaining_dice, unbanked_points):
+def roll_and_score(roll_dice, remaining_dice, unbanked_points, total_points):
     print(f"Rolling {remaining_dice} dice...")
     dice_result = roll_dice(remaining_dice)
     print("*** ", " ".join(map(str, dice_result)), " ***")
@@ -10,12 +10,13 @@ def roll_and_score(roll_dice, remaining_dice, unbanked_points):
     user_input = input("Enter dice to keep, or (q)uit:\n> ")
 
     if user_input.lower() == 'q':
-        print(f"Thanks for playing. ") 
+        print(f"Thanks for playing. You earned {total_points} points") 
         sys.exit()
 
 
     else: 
-        user_dice = list(map(int, user_input.split()))
+        # user_dice = list(map(int, user_input.split()))
+        user_dice = tuple([int(char) for char in user_input])
         round_points = GameLogic.calculate_score(user_dice)
         unbanked_points += round_points
         remaining_dice -= len(user_dice)
@@ -30,7 +31,7 @@ def play_round(roll_dice, round_number, total_points):
     remaining_dice = 6
 
     # Roll the dice for the first time
-    roll_and_score_result = roll_and_score(roll_dice, remaining_dice, unbanked_points)
+    roll_and_score_result = roll_and_score(roll_dice, remaining_dice, unbanked_points,total_points)
     remaining_dice = roll_and_score_result[0]
     unbanked_points = roll_and_score_result[1]
 
@@ -53,7 +54,7 @@ def play_round(roll_dice, round_number, total_points):
             break
             sys.exit()
 
-        roll_and_score_result = roll_and_score(roll_dice, remaining_dice, unbanked_points)
+        roll_and_score_result = roll_and_score(roll_dice, remaining_dice, unbanked_points, total_points)
         remaining_dice = roll_and_score_result[0]
         unbanked_points = roll_and_score_result[1]
 
@@ -72,14 +73,14 @@ def play(roller=None):
     if response.lower() == 'y':
         for round_number in range(1, max_rounds + 1):
             play_round_result = play_round(roll_dice, round_number, total_points)
-            # total_points = play_round_result[0]
+            total_points = play_round_result[0]
             continue_round = play_round_result[1]
             if not continue_round:
                 break
     elif response.lower() == 'n':
         print("OK. Maybe another time")
     elif response.lower() == 'q':
-        print("Thanks for playing. You earned 0 points")
+        print(f"Thanks for playing. You earned {total_points} points")
     else:
         print("Invalid input. Please enter 'y' or 'n.'")
 
