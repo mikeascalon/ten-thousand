@@ -26,9 +26,11 @@ python game_logic.py
 
  test_roll_dice.py
 
+ test_sim_basic.py
+
 
 ### Version
-The current version of the project is 1.1.0.
+The current version of the project is 2.0.0.
 
 
  
