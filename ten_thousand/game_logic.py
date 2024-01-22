@@ -17,6 +17,26 @@ class GameLogic:
     def roll_dice(num_dice):
     # Simulate rolling a given number of dice and return the values
         return [random.randint(1, 6) for _ in range(num_dice)]
+    
+    def get_scorers(dice):
+        """
+        Return a tuple of dice that are scoring.
+        In this game, only 1s and 5s score as single dice.
+        """
+        return tuple(d for d in dice if d == 1 or d == 5)
+    
+    @staticmethod
+    def validate_keepers(roll, keepers):
+        """
+        Validate if the keepers are a subset of the roll.
+        """
+        roll_counts = {num: roll.count(num) for num in set(roll)}
+        keepers_counts = {num: keepers.count(num) for num in set(keepers)}
+
+        for num in keepers_counts:
+            if keepers_counts[num] > roll_counts.get(num, 0):
+                return False
+        return True
 
     @staticmethod
     def calculate_score(dice_values):
