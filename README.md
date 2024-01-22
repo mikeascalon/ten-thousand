@@ -28,9 +28,15 @@ python game_logic.py
 
  test_sim_basic.py
 
+ test_get_scores.py
+
+ test_sim_advanced.py
+
+ test_validate_keepers.py
+
 
 ### Version
-The current version of the project is 2.0.0.
+The current version of the project is 3.0.0.
 
 
  
